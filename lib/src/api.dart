@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:open_meteo_dart/src/request_parameters/parameters_forecast_v1.dart';
 
+import 'models/response_forecast.dart';
+
 class OpenMeteoApi {
   final String baseURL = "https://api.open-meteo.com";
   final String endpointForecastV1 = "/v1/forecast";
@@ -37,7 +39,7 @@ class OpenMeteoApi {
   /// - cellSelection: Set a preference how grid-cells are selected. The default [CellSelection.land] finds a suitable grid-cell on land with
   ///                  [similar elevation to the requested coordinates using a 90-meter digital elevation model](https://openmeteo.substack.com/p/improving-weather-forecasts-with).
   ///                  [CellSelection.sea] prefers grid-cells on sea. [CellSelection.nearest] selects the nearest possible grid-cell.
-  Future<Response> forecastV1({
+  Future<ForecastResponseV1> forecastV1({
     required double latitude,
     required double longitude,
     double? elevation, // TODO Use 90 or null as the default?
@@ -103,27 +105,29 @@ class OpenMeteoApi {
       "cell_selection": cellSelection.name,
     };
 
-    final response = dio.get(
+    final response = await dio.get(
       "$baseURL$endpointForecastV1",
       queryParameters: queryParameters,
     );
 
     // TODO Return custom reponse instance.
-    return response;
+    // return response;
+    return ForecastResponseV1.fromJson(response.data);
   }
 }
 
 void main() {
   OpenMeteoApi api = OpenMeteoApi();
 
-  api.forecastV1(
+   api.forecastV1(
     latitude: 51.32,
     longitude: 9.50,
-    // hourlyParameters: [HourlyParameter.apparent_temperature],
-    dailyParameters: [DailyParameter.temperature2mMax],
+    // hourlyParameters: HourlyParameter.allRequestParameters,
+    // dailyParameters: DailyParameter.allRequestParameters,
+    currentWeather: true,
     // forecast_days: 2,
     // past_days: 2,
     startDate: DateTime(2023, 5, 28),
     endDate: DateTime(2023, 5, 31),
-  );
+  ).then((response) => print(response));
 }

@@ -1,9 +1,17 @@
+import 'package:json_annotation/json_annotation.dart';
+
 /// ref: https://open-meteo.com/en/docs
 
 /// Daily Parameter Definition
 ///
 /// Aggregations are a simple 24 hour aggregation from hourly values.
+@JsonEnum(valueField: "variable")
 enum DailyParameter {
+  /// Additional variable that is part of the server response but cannot be part of a request.
+  ///
+  /// - Unit: ISO8601
+  time("time"),
+
   /// Minimum daily air temperature at 2 meters above ground.
   ///
   /// - Unit: [°C, °F]
@@ -121,13 +129,23 @@ enum DailyParameter {
   const DailyParameter(this.variable);
 
   final String variable;
+
+  /// Returns all parameters that can be used in a request.
+  static List<DailyParameter> get allRequestParameters =>
+      DailyParameter.values.where((e) => e != DailyParameter.time).toList();
 }
 
 /// Hourly Parameter Definition:
 ///
 /// Most weather variables are given as an instantaneous value for the indicated hour.
 /// Some variables like precipitation are calculated from the preceding hour as an average or sum.
+@JsonEnum(valueField: "variable")
 enum HourlyParameter {
+  /// Additional variable that is part of the server response but cannot be part of a request.
+  ///
+  /// - Unit: ISO8601
+  time("time"),
+
   /// Air temperature at 2 meters above ground.
   ///
   /// - Valid time: Instant
@@ -427,9 +445,14 @@ enum HourlyParameter {
   const HourlyParameter(this.variable);
 
   final String variable;
+
+  /// Returns all parameters that can be used in a request.
+  static List<HourlyParameter> get allRequestParameters =>
+      HourlyParameter.values.where((e) => e != HourlyParameter.time).toList();
 }
 
 /// WMO Weather interpretation codes (WW)
+@JsonEnum(valueField: "code")
 enum WMOWeatherInterpretationCode {
   /// Clear sky
   clearSky(code: 0),
@@ -520,6 +543,44 @@ enum WMOWeatherInterpretationCode {
   final int code;
 }
 
+/// Current weather conditions.
+@JsonEnum(valueField: "variable")
+enum CurrentWeatherParameter {
+  /// Additional variable that is part of the server response but cannot be part of a request.
+  ///
+  /// - Unit: ISO8601
+  time("time"),
+
+  /// Air temperature.
+  ///
+  /// - Unit: [°C, °F]
+  temperature("temperature"),
+
+  /// Wind speed.
+  ///
+  /// - Unit: [km/h, mph, m/s, knots]
+  windspeed("windspeed"),
+
+  /// Wind direction.
+  ///
+  /// - Unit: °
+  winddirection("winddirection"),
+
+  /// Weather condition as a numeric code. Follow WMO weather interpretation codes.
+  ///
+  /// - Unit: [WMOWeatherInterpretationCode]
+  weathercode("weathercode"),
+
+  /// 1 if the current time step has daylight, 0 at night.
+  ///
+  /// - Unit: Dimensionless
+  isDay("is_day");
+
+  const CurrentWeatherParameter(this.variable);
+
+  final String variable;
+}
+
 /// Temperature units available from the api. To be used to specify a request parameter.
 enum TemperatureUnit {
   celsius,
@@ -542,8 +603,13 @@ enum PrecipitationUnit {
 
 /// Selections of cells available from the api. To be used to specify a request parameter.
 enum CellSelection {
+  /// Prefer grid-cells on land.
   land,
+
+  /// Prefer grid-cells on sea.
   sea,
+
+  /// Prefer nearest grid-cells, land or sea.
   nearest,
 }
 

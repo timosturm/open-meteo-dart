@@ -4,13 +4,29 @@ import 'package:open_meteo_dart/src/request_parameters/parameters_forecast_v1.da
 import 'models/response_forecast.dart';
 
 class OpenMeteoApi {
-  final String baseURL = "https://api.open-meteo.com";
-  final String endpointForecastV1 = "/v1/forecast";
+  final String baseURL;
+  final String endpointForecastV1;
+  final bool log;
 
-  final Dio dio = Dio();
+  late final Dio dio;
 
-  OpenMeteoApi() {
-    dio.interceptors.add(LogInterceptor(responseBody: true));
+  OpenMeteoApi({
+    Dio? customDio,
+    this.baseURL = "https://api.open-meteo.com",
+    this.endpointForecastV1 = "/v1/forecast",
+    this.log = true,
+  }) {
+    if (customDio == null) {
+      dio = Dio();
+
+      if (log) {
+        dio.interceptors.add(LogInterceptor(responseBody: true));
+      }
+    } else {
+      dio = customDio;
+    }
+
+    // TODO Add some custom error handling and wrap the 400 reponse!
   }
 
   /// Calls the forecast v1 endpoint.
@@ -60,21 +76,24 @@ class OpenMeteoApi {
       assert(0 <= forecastDays && forecastDays <= 16);
     }
 
-    if (pastDays != null) {
-      assert(0 <= pastDays && pastDays <= 92);
-    }
+    // if (pastDays != null) {
+    //   assert(0 <= pastDays && pastDays <= 92);
+    // }
 
     // Either start_date and end_date must be given or one of forecast_days or past_days.
     assert((startDate != null && endDate != null) ||
         (forecastDays != null || pastDays != null));
 
     // TODO past_days and forecast_days are mutually exclusive with start_date and end_date.
-
     if (startDate != null || endDate != null) {
       // Both must be given at the same time.
       assert(startDate != null && endDate != null);
       assert(pastDays == null && forecastDays == null);
     }
+
+    // time must not be part of the request!
+    assert(!(hourlyParameters?.contains(HourlyParameter.time) ?? false));
+    assert(!(dailyParameters?.contains(DailyParameter.time) ?? false));
 
     final Map<String, dynamic> queryParameters = {
       "latitude": latitude,
@@ -110,24 +129,6 @@ class OpenMeteoApi {
       queryParameters: queryParameters,
     );
 
-    // TODO Return custom reponse instance.
-    // return response;
     return ForecastResponseV1.fromJson(response.data);
   }
-}
-
-void main() {
-  OpenMeteoApi api = OpenMeteoApi();
-
-   api.forecastV1(
-    latitude: 51.32,
-    longitude: 9.50,
-    // hourlyParameters: HourlyParameter.allRequestParameters,
-    // dailyParameters: DailyParameter.allRequestParameters,
-    currentWeather: true,
-    // forecast_days: 2,
-    // past_days: 2,
-    startDate: DateTime(2023, 5, 28),
-    endDate: DateTime(2023, 5, 31),
-  ).then((response) => print(response));
 }

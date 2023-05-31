@@ -1,5 +1,5 @@
 name: open_meteo_dart
-description: A starting point for Dart libraries or applications.
+description: A client for [open-meteo](https://open-meteo.com/) API written in dart.
 version: 0.0.1
 repository: https://github.com/timosturm/open-meteo-dart
 publish_to: none
@@ -11,7 +11,6 @@ dependencies:
   dio: ^5.1.2
   json_annotation: ^4.8.1
   
-
 dev_dependencies:
   lints: ^2.0.0
   test: ^1.21.0

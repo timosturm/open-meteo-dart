@@ -54,7 +54,7 @@ dependencies:
 You can also use a version from github in `pubspec.yaml`:
 ```yaml
 dependencies:
-    open-meteo-dart:
+    open_meteo_dart:
         git: https://github.com/timosturm/open-meteo-dart.git
         ref: main # TODO inlcude a tag here!
 ```

@@ -6,7 +6,7 @@ void main() async {
   // OpenMeteoApi api = OpenMeteoApi(customDio: Dio());
   // ```
   OpenMeteoApi api =
-      OpenMeteoApi(log: true); // Print the response to the console.
+      OpenMeteoApi(logging: true); // Print the response to the console.
 
   ForecastResponseV1 responseV1 = await api.forecastV1(
     latitude: 52.52,

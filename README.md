@@ -68,7 +68,7 @@ import 'package:open_meteo_dart/open_meteo_dart.dart';
 
 void main() async {
   OpenMeteoApi api =
-      OpenMeteoApi(log: true); // Print the response to the console.
+      OpenMeteoApi(logging: true); // Print the response to the console.
 
   ForecastResponseV1 responseV1 = await api.forecastV1(
     latitude: 52.52,
@@ -95,6 +95,8 @@ A more ellaborate example can be found [here](example/example.dart).
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+More information about open-meteo can be found at the [official site](https://open-meteo.com/), including information about the weather variables.
+
+For now, I consider this package usable. If you require a certain API that is not yet implemented, please fell free to file an issue or (even better) submit a pull request.
+
+For code / implementation style take a look at the implemented forecast API. I prefer to have all request and response parameters hard coded as an `enum` to allow easier use via code-completion and type-safety. E.g., a user will know what parameters are allowed by the forecast API for daily forecasts by looking at the enum `DailyParameter`.

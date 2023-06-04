@@ -6,7 +6,7 @@ import 'models/response_forecast.dart';
 class OpenMeteoApi {
   final String baseURL;
   final String endpointForecastV1;
-  final bool log;
+  final bool logging;
 
   late final Dio dio;
 
@@ -14,12 +14,12 @@ class OpenMeteoApi {
     Dio? customDio,
     this.baseURL = "https://api.open-meteo.com",
     this.endpointForecastV1 = "/v1/forecast",
-    this.log = true,
+    this.logging = true,
   }) {
     if (customDio == null) {
       dio = Dio();
 
-      if (log) {
+      if (logging) {
         dio.interceptors.add(LogInterceptor(responseBody: true));
       }
     } else {
@@ -76,9 +76,9 @@ class OpenMeteoApi {
       assert(0 <= forecastDays && forecastDays <= 16);
     }
 
-    // if (pastDays != null) {
-    //   assert(0 <= pastDays && pastDays <= 92);
-    // }
+    if (pastDays != null) {
+      assert(0 <= pastDays && pastDays <= 92);
+    }
 
     // Either start_date and end_date must be given or one of forecast_days or past_days.
     assert((startDate != null && endDate != null) ||
